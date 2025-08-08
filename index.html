@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dokumentasi Grup WA</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>😹 Dokumentasi Grup WhatsApp</h1>
+    <p id="music-note">📌 Ketuk layar GOBLOG...</p>
+
+    <div class="group-photo">
+      <img id="group-img" src="/img/grup.jpg" alt="Foto Grup" />
+      <!-- Form upload: unggah gambar baru untuk foto grup -->
+      <form id="uploadForm" enctype="multipart/form-data" style="margin-top:10px;">
+        <input id="fileInput" type="file" name="file" accept="image/*" required />
+        <button type="submit">Upload Foto Grup</button>
+      </form>
+    </div>
+
+    <div class="member-list">
+      <div class="member" onclick="showNickname('Irpan')">
+        <strong>Irpan</strong><br>
+        📞 +62 878-7608-2604<br>
+        <img src="/img/whatsapp.png" class="icon" alt="WA" />
+        <a href="https://www.instagram.com/fanz.world_?igsh=MWw3Yzd5a3AzZW4xdA==" target="_blank">
+          <img src="/img/instagram.png" class="icon" alt="IG" />
+        </a>
+        <p id="nick-Irpan" class="nickname"></p>
+      </div>
+
+      <div class="member" onclick="showNickname('Ripan')">
+        <strong>Ripan</strong><br>
+        📞 +62 838-4112-1840<br>
+        <img src="/img/whatsapp.png" class="icon" alt="WA" />
+        <a href="https://www.instagram.com/vanzhazatt13_?igsh=MTlka3NhNXFkZnAy" target="_blank">
+          <img src="/img/instagram.png" class="icon" alt="IG" />
+        </a>
+        <p id="nick-Ripan" class="nickname"></p>
+      </div>
+
+      <div class="member" onclick="showNickname('Ropi')">
+        <strong>Ropi</strong><br>
+        📞 +62 812-1282-4475<br>
+        <img src="/img/whatsapp.png" class="icon" alt="WA" />
+        <a href="https://www.instagram.com/scdltx?igsh=MWp1enU0Yzk2anhu" target="_blank">
+          <img src="/img/instagram.png" class="icon" alt="IG" />
+        </a>
+        <p id="nick-Ropi" class="nickname"></p>
+      </div>
+
+      <div class="member" onclick="showNickname('Abdul')">
+        <strong>Abdul</strong><br>
+        📞 +6285794963647<br>
+        <img src="/img/whatsapp.png" class="icon" alt="WA" />
+        <a href="https://www.instagram.com/srepet_bletak?igsh=bTZsemp2cjBpb2Qy" target="_blank">
+          <img src="/img/instagram.png" class="icon" alt="IG" />
+        </a>
+        <p id="nick-Abdul" class="nickname"></p>
+      </div>
+    </div>
+  </div>
+
+  <audio id="bg-music" loop>
+    <source src="/music/bg-music.mp3" type="audio/mpeg" />
+    Browser tidak mendukung audio.
+  </audio>
+
+  <footer>
+    <p>&copy; 2025 KONTOL DAN MEMEK. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // --- Musik autoplay on first click ---
+    const musicNote = document.getElementById("music-note");
+    const audio = document.getElementById("bg-music");
+
+    window.addEventListener("click", function playMusic() {
+      audio.play().then(() => {
+        musicNote.style.display = "none";
+        document.body.classList.add("music-playing");
+      }).catch(() => {});
+      window.removeEventListener("click", playMusic);
+    });
+
+    // --- Nicknames ---
+    const nicknames = {
+      Irpan: "SEPUH DARI SEGALA SEPUH",
+      Ripan: "SANG PENGENDALI PEREMPUAN",
+      Ropi: "POCKY LOVE 😹",
+      Abdul: "BANDAR DARI SEGALA BANDAR"
+    };
+
+    function showNickname(name) {
+      const el = document.getElementById(`nick-${name}`);
+      el.innerText = el.innerText === "" ? nicknames[name] : "";
+    }
+
+    // --- Upload Foto Grup (frontend) ---
+    // NOTE: endpoint /api/upload harus tersedia di Vercel (lihat contoh handler yang kita siapkan).
+    const uploadForm = document.getElementById("uploadForm");
+    const fileInput = document.getElementById("fileInput");
+    const groupImg = document.getElementById("group-img");
+
+    uploadForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert("Pilih file gambar dulu.");
+        return;
+      }
+
+      const file = fileInput.files[0];
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: formData
+        });
+
+        if (!res.ok) {
+          const text = await res.text().catch(() => null);
+          throw new Error(text || "Response not ok");
+        }
+
+        const data = await res.json();
+        // Expecting { url: "https://..." } dari API
+        if (data && data.url) {
+          // update gambar di halaman
+          groupImg.src = data.url;
+          alert("Foto grup berhasil diupdate!");
+          uploadForm.reset();
+        } else {
+          throw new Error("Format response tidak sesuai.");
+        }
+      } catch (err) {
+        console.error("Upload error:", err);
+        alert("Gagal upload foto. Cek console atau server API.");
+      }
+    });
+  </script>
+</body>
+</html>

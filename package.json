@@ -1,0 +1,9 @@
+{
+  "name": "grup-wa",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@vercel/blob": "^0.5.0",
+    "formidable": "^3.6.0"
+  }
+}
